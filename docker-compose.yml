@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  
+  # node:
+  #   build: .
+  #   restart: unless-stopped
+  #   volumes:
+  #   - .:/app
+  #   environment:
+  #     CHOKIDAR_USEPOLLING: true
+  #     CHOKIDAR_INTERVAL: 2000
+  #   ports:
+  #   - 3333:3333
+  #   depends_on:
+  #     - db
+
+  db:
+    image: mysql
+    platform: linux/x86_64
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'Adonis'
+      MYSQL_ROOT_PASSWORD: 'secret'
+    ports:
+      - '3306:3306'
