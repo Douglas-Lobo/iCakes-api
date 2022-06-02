@@ -6,14 +6,14 @@ export default class Ingredients extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.string('name')
+      table.integer('budget_id').references('budgets.id').onDelete('CASCADE').unsigned()
+      table.string('name').notNullable()
       table.float('initial_amount')
       table.float('cost')
       table.string('initial_unit')
       table.float('used_amount')
       table.string('used_unit')
       table.float('total')
-      table.integer('budget_id').references('budgets.id').onDelete('CASCADE').unsigned()
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

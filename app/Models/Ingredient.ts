@@ -10,16 +10,16 @@ export default class Ingredient extends BaseModel {
   public name: string
 
   @column()
-  public initial_amount: number
+  public initialAmount: number
 
   @column()
   public cost: number
 
   @column()
-  public used_amount: number
+  public usedAmount: number
 
   @column()
-  public used_unit: string
+  public usedUnit: string
 
   @column()
   public total: number
@@ -27,10 +27,21 @@ export default class Ingredient extends BaseModel {
   @column()
   public budgetId: number
 
-  @column.dateTime({ autoCreate: true, serializeAs: null })
+  @column.dateTime({
+    autoCreate: true,
+    serialize: (value: DateTime) => {
+      return value.toFormat('dd/MM/yy')
+    },
+  })
   public createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })
+  @column.dateTime({
+    autoCreate: true,
+    autoUpdate: true,
+    serialize: (value: DateTime) => {
+      return value.toFormat('dd/MM/yy')
+    },
+  })
   public updatedAt: DateTime
 
   @belongsTo(() => Budget)
