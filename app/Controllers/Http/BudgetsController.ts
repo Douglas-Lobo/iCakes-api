@@ -1,25 +1,26 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { Budget } from 'App/Models'
 import { updateBudgetValues } from 'App/Utils/Calculations'
+import { StoreValidator, UpdateValidator } from 'App/Validators/Budgets'
 
 export default class BudgetsController {
   public async index({ auth }: HttpContextContract) {
     const user = await auth.authenticate()
-    const budgets = Budget.query().where('user_id', user.id).paginate(1, 10)
+    const budgets = await user.related('budgets').query().paginate(1, 10)
     return budgets
   }
 
   public async store({ request, auth }: HttpContextContract) {
     const user = await auth.authenticate()
-    const data = request.only(['name', 'description', 'profitPercent'])
-    return await Budget.create({ userId: user.id, ...data })
+    const data = await request.validate(StoreValidator)
+    return await user.related('budgets').create(data)
   }
 
-  public async update({ params, request, response, auth }: HttpContextContract) {
+  public async update({ params, request, auth }: HttpContextContract) {
     const { id } = params
+    let data = await request.validate(UpdateValidator)
     const user = await auth.authenticate()
-    let data = request.body()
-    const budget = await Budget.query().where('id', id).andWhere('user_id', user.id).firstOrFail()
+    const budget = await user.related('budgets').query().where('id', id).firstOrFail()
 
     if (budget.profitPercent !== data.profitPercent) {
       const newValues = updateBudgetValues(
@@ -31,16 +32,13 @@ export default class BudgetsController {
       data = { ...data, ...newValues }
     }
 
-    if (budget.userId !== user.id) {
-      return response.unauthorized()
-    }
     return await budget.merge(data).save()
   }
 
   public async destroy({ params, auth }: HttpContextContract) {
     const user = await auth.authenticate()
     const { id } = params
-    const budget = await Budget.query().where('id', id).andWhere('user_id', user.id).firstOrFail()
+    const budget = await user.related('budgets').query().where('id', id).firstOrFail()
     await budget.delete()
     return budget.$isDeleted
   }
