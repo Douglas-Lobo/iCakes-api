@@ -1,12 +1,20 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { Budget } from 'App/Models'
 import { updateBudgetValues } from 'App/Utils/Calculations'
-import { StoreValidator, UpdateValidator } from 'App/Validators/Budgets'
+import { StoreValidator, UpdateValidator } from 'App/Validators/Budget'
 
 export default class BudgetsController {
-  public async index({ auth }: HttpContextContract) {
+  public async index({ auth, request }: HttpContextContract) {
     const user = await auth.authenticate()
-    const budgets = await user.related('budgets').query().paginate(1, 10)
+    let { page, perPage, sort } = request.qs()
+    page = page ? page : 1
+    perPage = perPage ? perPage : 11
+    sort = sort ? sort : 'desc'
+    const budgets = await user
+      .related('budgets')
+      .query()
+      .orderBy('created_at', sort)
+      .paginate(page, perPage)
     return budgets
   }
 
@@ -14,6 +22,12 @@ export default class BudgetsController {
     const user = await auth.authenticate()
     const data = await request.validate(StoreValidator)
     return await user.related('budgets').create(data)
+  }
+
+  public async show({ params, auth }: HttpContextContract) {
+    const user = await auth.authenticate()
+    const budgetId = params.id
+    return await user.related('budgets').query().where('id', budgetId).firstOrFail()
   }
 
   public async update({ params, request, auth }: HttpContextContract) {

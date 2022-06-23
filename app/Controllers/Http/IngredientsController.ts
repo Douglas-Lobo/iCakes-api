@@ -1,7 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { Ingredient, Budget } from 'App/Models'
 import { calcIngredientTotal, calcBudgetValues, budgetDelIngredient } from 'App/Utils/Calculations'
-import { StoreValidator, UpdateValidator } from 'App/Validators/Ingredients'
+import { StoreValidator, UpdateValidator } from 'App/Validators/Ingredient'
 export default class IngredientController {
   public async index({ params, auth }: HttpContextContract) {
     const { budgetId } = params

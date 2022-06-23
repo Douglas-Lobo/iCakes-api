@@ -3,13 +3,20 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.resource('recipes', 'RecipesController').apiOnly()
 Route.resource('categories', 'CategoriesController').apiOnly()
 Route.resource('images', 'ImagesController').apiOnly()
-Route.resource('users', 'UsersController').apiOnly()
+Route.resource('users', 'UsersController')
+  .apiOnly()
+  .middleware({ '*': ['acl:Admin'] })
 
 //budgets
 Route.resource('budgets', 'BudgetsController')
-  .except(['show'])
   .apiOnly()
-  .middleware({ store: ['auth'], destroy: ['auth'], index: ['auth'], update: ['auth'] })
+  .middleware({
+    store: ['auth'],
+    destroy: ['auth'],
+    index: ['auth'],
+    update: ['auth'],
+    show: ['auth'],
+  })
 Route.group(() => {
   Route.get('/search', 'BudgetsController.search').middleware(['auth'])
   Route.get('/:id/ingredients/count', 'BudgetsController.ingredientsCount').middleware(['auth'])
