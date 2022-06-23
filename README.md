@@ -5,6 +5,8 @@ A personal project that allows users to register recipes and calculate the selli
 ## Requirements
 Docker
 ## Installation
+npm install
+
 docker compose up -d
 
 node ace migration:run
