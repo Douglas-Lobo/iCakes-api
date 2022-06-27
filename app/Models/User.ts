@@ -29,7 +29,7 @@ export default class User extends BaseModel {
   public role: 'User' | 'Admin'
 
   @column()
-  public photo: string
+  public photo?: string
 
   @column({ serializeAs: null })
   public password: string

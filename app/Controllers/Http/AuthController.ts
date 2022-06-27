@@ -10,8 +10,7 @@ export default class AuthController {
   }
 
   public async show({ auth }: HttpContextContract) {
-    const user = await auth.authenticate()
-    return user
+    return await auth.authenticate()
   }
 
   public async destroy({ auth }: HttpContextContract) {
