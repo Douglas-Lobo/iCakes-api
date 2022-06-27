@@ -3,20 +3,12 @@ import { User } from 'App/Models'
 
 export default class UserSeeder extends BaseSeeder {
   public async run() {
-    await User.createMany([
-      {
-        name: 'Douglas Lobo',
-        email: 'virk@adonisjs.com',
-        username: 'Douglas',
-        password: 'secret',
-        role: 'Admin',
-      },
-      {
-        name: 'Rosa Bento',
-        email: 'r@r.com',
-        username: 'Rosa',
-        password: 'supersecret',
-      },
-    ])
+    await User.create({
+      name: 'admin',
+      email: 'admin@admin.com',
+      username: 'admin',
+      password: 'secret',
+      role: 'Admin',
+    })
   }
 }

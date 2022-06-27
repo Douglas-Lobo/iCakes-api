@@ -3,9 +3,7 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.resource('recipes', 'RecipesController').apiOnly()
 Route.resource('categories', 'CategoriesController').apiOnly()
 Route.resource('images', 'ImagesController').apiOnly()
-Route.resource('users', 'UsersController')
-  .apiOnly()
-  .middleware({ '*': ['acl:Admin'] })
+Route.resource('users', 'UsersController').apiOnly()
 
 //budgets
 Route.resource('budgets', 'BudgetsController')
@@ -36,3 +34,9 @@ Route.group(() => {
   Route.delete('/', 'AuthController.destroy').middleware(['auth'])
   Route.get('/user', 'AuthController.show').middleware(['auth'])
 }).prefix('/auth')
+
+Route.resource('register', 'RegisterController').apiOnly()
+
+Route.get('/', async ({ view }) => {
+  return view.render('home')
+})
