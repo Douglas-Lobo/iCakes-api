@@ -30,13 +30,13 @@ export default class UserRegisterController {
   }
 
   public async show({ params }: HttpContextContract) {
-    const userKey = params.id
-    const key = await UserKey.findByOrFail('key', userKey)
-    return await key.related('user').query().firstOrFail()
+    const { key } = params
+    const userKey = await UserKey.findByOrFail('key', key)
+    return await userKey.related('user').query().firstOrFail()
   }
 
   public async update({ request, params, response }: HttpContextContract) {
-    const key = params.id
+    const { key } = params
     const { username, name, password } = await request.validate(UpdateValidator)
     const photo = await Drive.getUrl('user-default.png')
     const userKey = await UserKey.findByOrFail('key', key)

@@ -35,8 +35,14 @@ Route.group(() => {
   Route.get('/user', 'AuthController.show').middleware(['auth'])
 }).prefix('/auth')
 
-Route.resource('register', 'RegisterController').apiOnly()
+Route.group(() => {
+  Route.post('/', 'RegisterController.store')
+  Route.get('/:key', 'RegisterController.show')
+  Route.put('/:key', 'RegisterController.update')
+}).prefix('register')
 
-Route.get('/', async ({ view }) => {
-  return view.render('home')
-})
+Route.group(() => {
+  Route.post('/', 'ForgotPasswordController.store')
+  Route.get('/:key', 'ForgotPasswordController.show')
+  Route.put('/:key', 'ForgotPasswordController.update')
+}).prefix('forgot-password')

@@ -8,6 +8,7 @@ import {
   HasMany,
   hasOne,
   HasOne,
+  computed,
 } from '@ioc:Adonis/Lucid/Orm'
 import { Budget, UserKey } from 'App/Models'
 
@@ -35,6 +36,11 @@ export default class User extends BaseModel {
 
   @column()
   public rememberMeToken?: string
+
+  @computed()
+  public get firstName() {
+    return this.name ? this.name.charAt(0).toUpperCase() + this.name.split(' ')[0].slice(1) : ''
+  }
 
   @column.dateTime({
     autoCreate: true,
