@@ -1,14 +1,13 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { Ingredient, Budget } from 'App/Models'
 import { calcIngredientTotal, calcBudgetValues, budgetDelIngredient } from 'App/Utils/Calculations'
 import { StoreValidator, UpdateValidator } from 'App/Validators/Ingredient'
+
 export default class IngredientController {
   public async index({ params, auth }: HttpContextContract) {
     const { budgetId } = params
     const user = await auth.authenticate()
-    await Budget.query().where('id', budgetId).andWhere('user_id', user.id).firstOrFail()
-
-    return Ingredient.query().where('budget_id', budgetId).paginate(1, 10)
+    const budget = await user.related('budgets').query().where('id', budgetId).firstOrFail()
+    return await budget.related('ingredients').query().paginate(1, 10)
   }
 
   public async store({ request, params, auth }: HttpContextContract) {
@@ -20,8 +19,7 @@ export default class IngredientController {
     const newIngredientData = { ...data, ...ingredientTotal }
     const budgetUpdate = calcBudgetValues(budget.cost, ingredientTotal.total, budget.profitPercent)
     await budget.merge(budgetUpdate).save()
-    const ingredient = await budget.related('ingredients').create(newIngredientData)
-    return ingredient
+    return await budget.related('ingredients').create(newIngredientData)
   }
 
   public async update({ request, params, auth }: HttpContextContract) {
@@ -52,16 +50,10 @@ export default class IngredientController {
   public async destroy({ params, auth }: HttpContextContract) {
     const { budgetId, id } = params
     const user = await auth.authenticate()
-    const budget = await Budget.query()
-      .where('id', budgetId)
-      .andWhere('user_id', user.id)
-      .firstOrFail()
+    const budget = await user.related('budgets').query().where('id', budgetId).firstOrFail()
+    const ingredient = await budget.related('ingredients').query().where('id', id).firstOrFail()
 
-    const ingredient = await Ingredient.query()
-      .where('budget_id', params.budgetId)
-      .andWhere('id', id)
-      .firstOrFail()
-    const newCost = budget.cost - ingredient.cost
+    const newCost = budget.cost - ingredient.total
     const newBudgetValues = budgetDelIngredient(newCost, budget.profitPercent)
     await budget.merge(newBudgetValues).save()
     await ingredient.delete()
