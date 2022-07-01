@@ -11,7 +11,7 @@ export default class UsersSchema extends BaseSchema {
       table.string('username', 255).unique()
       table.string('password', 180)
       table.enum('role', ['Admin', 'User']).defaultTo('User')
-      table.string('photo').unique()
+      table.string('photo')
       table.string('remember_me_token').nullable()
       table.timestamp('created_at', { useTz: true }).notNullable()
       table.timestamp('updated_at', { useTz: true }).notNullable()
